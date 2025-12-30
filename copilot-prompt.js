@@ -9,6 +9,28 @@ import { writeFileSync } from 'fs';
 const MODEL = process.env.COPILOT_PROMPT_MODEL || 'gpt-5-mini';
 const OUTPUT_FILE = process.argv[2]; // Get output file path from command line arg
 
+// Cleanup function to remove markdown code blocks and extra formatting
+function cleanupCommand(command) {
+  let cleaned = command.trim();
+  
+  // Remove markdown code blocks (```bash, ```sh, ```zsh, or just ```)
+  // Match opening backticks with optional language identifier
+  cleaned = cleaned.replace(/^```(?:bash|sh|zsh|shell)?\s*\n?/i, '');
+  // Remove closing backticks
+  cleaned = cleaned.replace(/\n?```\s*$/, '');
+  
+  // Trim again after removing code blocks
+  cleaned = cleaned.trim();
+  
+  // Remove any leading/trailing quotes if the entire command is quoted
+  if ((cleaned.startsWith('"') && cleaned.endsWith('"')) || 
+      (cleaned.startsWith("'") && cleaned.endsWith("'"))) {
+    cleaned = cleaned.slice(1, -1);
+  }
+  
+  return cleaned;
+}
+
 // Run copilot command
 function runCopilot(userPrompt) {
   return new Promise((resolve, reject) => {
@@ -41,7 +63,9 @@ function runCopilot(userPrompt) {
         if (!trimmedOutput) {
           reject(new Error('Copilot returned empty output'));
         } else {
-          resolve(trimmedOutput);
+          // Apply cleanup to remove markdown code blocks
+          const cleanedOutput = cleanupCommand(trimmedOutput);
+          resolve(cleanedOutput);
         }
       } else {
         reject(new Error(error || `copilot exited with code ${code}`));
