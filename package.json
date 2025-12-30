@@ -1,0 +1,16 @@
+{
+  "name": "zsh-copilot-plugin",
+  "version": "1.0.0",
+  "description": "An interactive zsh plugin that lets you generate shell commands using an LLM by pressing `Ctrl+Space`.",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^8.1.0",
+    "chalk": "^5.6.2"
+  }
+}
